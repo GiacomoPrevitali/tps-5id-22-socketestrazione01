@@ -85,9 +85,8 @@
             this.lbl_Num.Font = new System.Drawing.Font("Times New Roman", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_Num.Location = new System.Drawing.Point(186, 277);
             this.lbl_Num.Name = "lbl_Num";
-            this.lbl_Num.Size = new System.Drawing.Size(84, 33);
+            this.lbl_Num.Size = new System.Drawing.Size(0, 33);
             this.lbl_Num.TabIndex = 5;
-            this.lbl_Num.Text = "label1";
             // 
             // label1
             // 
