@@ -125,6 +125,7 @@ namespace Server
                 lbl_Stato.Text = "Spento";
                 lbl_Stato.ForeColor = System.Drawing.Color.Red;
                 acceso = !acceso;
+
                 t.Abort();
             }
 
