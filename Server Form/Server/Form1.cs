@@ -25,6 +25,7 @@ namespace Server
         byte[] bytes = new Byte[1024];
         Random r;
         bool check = false;
+        bool acceso=false;
         int num;
         public static string data = null;
         public Form1()
@@ -52,69 +53,86 @@ namespace Server
         }
         public void server()
         {
-            lbl_Stato.Text = "Acceso";
-            if (lbl_Stato.Text == "Spento")
+            Socket handler=new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            if (!acceso)
             {
-                lbl_Stato.ForeColor = System.Drawing.Color.Red;
-            }
-            else
-            {
+                lbl_Stato.Text = "Acceso";
                 lbl_Stato.ForeColor = System.Drawing.Color.Green;
-            }
-            try
-            {
-                listener.Bind(localEndPoint);
-                listener.Listen(10);
+                acceso = !acceso;
+                MessageBox.Show("arriva1");
 
-                while (true)
+                try
                 {
-                    Console.WriteLine("Waiting for a connection...");
-                    Socket handler = listener.Accept();
-                    data = null;
+ 
+                    listener.Bind(localEndPoint);
+                    listener.Listen(10);
 
                     while (true)
                     {
-                        int bytesRec = handler.Receive(bytes);
-                        data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                        if (data.IndexOf("<EOF>") > -1)
+                        handler = listener.Accept();
+                        data = null;
+
+                        while (true)
                         {
-                            break;
+                            int bytesRec = handler.Receive(bytes);
+                            data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                            if (data.IndexOf("<EOF>") > -1)
+                            {
+                                break;
+                            }
                         }
-                    }
 
-                    string[] info = data.Split(';');
-                    var reader = new StreamReader(@"Utenti.csv");
-                    while (!reader.EndOfStream)
-                    {
-                        var l = reader.ReadLine();
-                        string[] v = l.Split(';');
-
-                        if (v[0] == info[0] && v[1] == info[1])
+                        string[] info = data.Split(';');
+                        var reader = new StreamReader(@"Utenti.csv");
+                        while (!reader.EndOfStream)
                         {
-                            check = true;
+                            var l = reader.ReadLine();
+                            string[] v = l.Split(';');
+
+                            if (v[0] == info[0] && v[1] == info[1])
+                            {
+                                check = true;
+                            }
                         }
-                    }
-                    if (check)
-                    {
-                        num = r.Next(Convert.ToInt32(info[2]), Convert.ToInt32(info[3]));
-                    }
-                    else
-                    {
-                        num = -1;
-                    }
+                        if (check)
+                        {
+                            num = r.Next(Convert.ToInt32(info[2]), Convert.ToInt32(info[3]));
+                        }
+                        else
+                        {
+                            num = -1;
+                        }
 
-                    byte[] msg = Encoding.ASCII.GetBytes(Convert.ToString(num));
+                        byte[] msg = Encoding.ASCII.GetBytes(Convert.ToString(num));
 
-                    handler.Send(msg);
-                    handler.Shutdown(SocketShutdown.Both);
-                    handler.Close();
-                    check = false;
+                        handler.Send(msg);
+                        handler.Shutdown(SocketShutdown.Both);
+                        handler.Close();
+                        check = false;
+                    }
+                }
+
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                   
                 }
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show(ex.ToString());
+               
+                MessageBox.Show("arriva1.1");
+                lbl_Stato.Text = "Spento";
+                lbl_Stato.ForeColor = System.Drawing.Color.Red;
+                acceso = !acceso;
+                t.Abort();
             }
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("ciao");
         }
     }
 }
