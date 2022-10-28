@@ -27,6 +27,12 @@ namespace Client
         private void Form1_Load(object sender, EventArgs e)
         {
             txt_Password.PasswordChar = '*';
+   
+        }
+
+        private void btn_Invia_Click(object S, EventArgs e)
+        {
+            string r;
             try
             {
 
@@ -34,57 +40,52 @@ namespace Client
                 remoteEP = new IPEndPoint(ipAddress, 5000);
                 Sender = new Socket(ipAddress.AddressFamily,
                   SocketType.Stream, ProtocolType.Tcp);
+
+                try
+                {
+                    Sender.Connect(remoteEP);
+
+                    Console.WriteLine("Socket connected to {0}",
+                        Sender.RemoteEndPoint.ToString());
+
+
+                    byte[] msg = Encoding.ASCII.GetBytes(txt_Nome.Text + ";" + txt_Password.Text + ";" + txt_Min.Text + ";" + txt_Max.Text + ";<EOF>");
+
+                    int bytesSent = Sender.Send(msg);
+
+
+                    int bytesRec = Sender.Receive(bytes);
+                    r = Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                    if (Convert.ToInt32(r) == -1)
+                    {
+                        MessageBox.Show("Nome Utente o Password errati!", "errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        this.Close();
+                    }
+                    else
+                    {
+                        lbl_Num.Text = "Numero Estratto: " + r;
+                    }
+
+                    Sender.Shutdown(SocketShutdown.Both);
+                    Sender.Close();
+
+                }
+                catch (ArgumentNullException ane)
+                {
+                    MessageBox.Show(ane.ToString());
+                }
+                catch (SocketException se)
+                {
+                    MessageBox.Show("IMPOSSIBILE RAGGIUNGERE IL SERVER");
+                }
+                catch (Exception exx)
+                {
+                    MessageBox.Show(exx.ToString());
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }
-        }
-
-        private void btn_Invia_Click(object S, EventArgs e)
-        {
-            string r;
-
-            try
-            {
-                Sender.Connect(remoteEP);
-
-                Console.WriteLine("Socket connected to {0}",
-                    Sender.RemoteEndPoint.ToString());
-
- 
-                byte[] msg = Encoding.ASCII.GetBytes(txt_Nome.Text+";"+txt_Password.Text+";"+txt_Min.Text+";"+txt_Max.Text+";<EOF>");
-
-                int bytesSent = Sender.Send(msg);
-
-
-                int bytesRec = Sender.Receive(bytes);
-                r= Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                if (Convert.ToInt32(r) == -1)
-                {
-                    MessageBox.Show("Nome Utente o Password errati!", "errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    this.Close();
-                }
-                else
-                {
-                    lbl_Num.Text = "Numero Estratto: " + r;
-                }
-               
-                Sender.Shutdown(SocketShutdown.Both);
-                Sender.Close();
-
-            }
-            catch (ArgumentNullException ane)
-            {
-                MessageBox.Show(ane.ToString());
-            }
-            catch (SocketException se)
-            {
-                MessageBox.Show("IMPOSSIBILE RAGGIUNGERE IL SERVER");
-            }
-            catch (Exception exx)
-            {
-                MessageBox.Show(exx.ToString());
             }
         }
 

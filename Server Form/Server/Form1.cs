@@ -48,19 +48,18 @@ namespace Server
         private void button1_Click(object sender, EventArgs e)
         {
             t = new Thread(server);
+            t.IsBackground = true;
             t.Start();
 
         }
         public void server()
         {
-            Socket handler=new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            Socket handler = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             if (!acceso)
             {
                 lbl_Stato.Text = "Acceso";
                 lbl_Stato.ForeColor = System.Drawing.Color.Green;
                 acceso = !acceso;
-                MessageBox.Show("arriva1");
-
                 try
                 {
  
@@ -120,12 +119,10 @@ namespace Server
             }
             else
             {
-               
-                MessageBox.Show("arriva1.1");
                 lbl_Stato.Text = "Spento";
                 lbl_Stato.ForeColor = System.Drawing.Color.Red;
                 acceso = !acceso;
-                t.Abort();
+                
             }
 
         }
